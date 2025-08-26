@@ -4,22 +4,26 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Target environment to destroy (dev, stage, prod)"
+        description: "Target environment (dev, stage, prod)"
         required: true
         default: "dev"
+      region:
+        description: "Cloud region (e.g., eastus2, westus2)"
+        required: true
+        default: "eastus2"
+
 
 jobs:
-  terraform-destroy:
-    name: "Terraform Destroy"
+  terraform:
+    name: "Terraform Apply"
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment || 'dev' }}
 
     env:
       TF_VAR_confluent_cloud_api_key: ${{ secrets.CONFLUENT_CLOUD_API_KEY }}
       TF_VAR_confluent_cloud_api_secret: ${{ secrets.CONFLUENT_CLOUD_API_SECRET }}
       TF_VAR_organization_id: ${{ secrets.CONFLUENT_ORG_ID }}
-      TF_VAR_by_env: ${{ github.event.inputs.environment || 'dev' }}
-      TF_VAR_region: eastus2
+      TF_VAR_by_env: ${{ github.event.inputs.environment}}
+      TF_VAR_region: ${{ github.event.inputs.region }}
 
     steps:
       - name: Checkout repository
