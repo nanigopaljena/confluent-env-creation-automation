@@ -29,33 +29,26 @@ resource "confluent_service_account" "accounts" {
 }
 
 # -----------------------------
-# Role Bindings (one per role)
+# Role Bindings (one per role per SA)
 # -----------------------------
-resource "confluent_role_binding" "bindings" {
-  for_each = {
-    for sa in var.service_accounts : sa.name => {
-      sa_id = confluent_service_account.accounts[sa.name].id
-      roles = sa.roles
-    }
-  }
-
-  # Flatten roles into a single string to make unique keys
-  principal   = "User:${each.value.sa_id}"
-  role_name   = element(each.value.roles, 0)
-  crn_pattern = confluent_environment.this.resource_name
+locals {
+  role_bindings = flatten([
+    for sa in var.service_accounts : [
+      for role in sa.roles : {
+        sa_name = sa.name
+        role    = role
+      }
+    ]
+  ])
 }
 
-# Alternative: if you want ALL roles created, not just the first one:
-resource "confluent_role_binding" "all_roles" {
+resource "confluent_role_binding" "bindings" {
   for_each = {
-    for sa in var.service_accounts : sa.name => {
-      sa_id  = confluent_service_account.accounts[sa.name].id
-      roles  = sa.roles
-    }
+    for rb in local.role_bindings :
+    "${rb.sa_name}-${rb.role}" => rb
   }
 
-  principal   = "User:${each.value.sa_id}"
-  role_name   = each.value.roles[count.index]
+  principal   = "User:${confluent_service_account.accounts[each.value.sa_name].id}"
+  role_name   = each.value.role
   crn_pattern = confluent_environment.this.resource_name
-  count       = length(each.value.roles)
 }
