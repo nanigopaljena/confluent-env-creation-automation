@@ -14,3 +14,14 @@ output "service_accounts" {
   }
 }
 
+output "service_account_api_keys" {
+  description = "API keys and secrets for each service account"
+  value = {
+    for sa, key in confluent_api_key.sa_keys :
+    sa => {
+      api_key    = key.id
+      api_secret = key.secret
+    }
+  }
+  sensitive = false
+}

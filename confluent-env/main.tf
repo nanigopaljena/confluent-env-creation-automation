@@ -54,3 +54,18 @@ resource "confluent_role_binding" "org_account_admin" {
   crn_pattern = "crn://confluent.cloud/organization=${var.organization_id}"
   role_name   = "AccountAdmin"
 }
+
+# API Keys for each Service Account
+resource "confluent_api_key" "sa_keys" {
+  for_each = confluent_service_account.accounts
+
+  display_name = "${each.key}-api-key"
+  description  = "API Key for ${each.key}"
+  owner {
+    id          = each.value.id
+    api_version = each.value.api_version
+    kind        = each.value.kind
+  }
+
+  depends_on = [confluent_role_binding.env_roles]
+}
