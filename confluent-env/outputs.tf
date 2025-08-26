@@ -23,5 +23,5 @@ output "service_account_api_keys" {
       api_secret = key.secret
     }
   }
-  sensitive = false
+  sensitive = true
 }
