@@ -52,9 +52,3 @@ jobs:
           TF_VAR_confluent_cloud_api_key: ${{ secrets.CONFLUENT_CLOUD_API_KEY }}
           TF_VAR_confluent_cloud_api_secret: ${{ secrets.CONFLUENT_CLOUD_API_SECRET }}
         run: terraform apply -auto-approve tfplan
-
-      - name: Upload state
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-state
-          path: ./confluent-env/terraform.tfstate
