@@ -16,22 +16,25 @@ resource "confluent_network" "privatelink_network" {
     id = data.confluent_environment.env.id
   }
 
-  connection_types = ["privatelink"]
+  connection_types = ["PRIVATELINK"]
 }
 
-# Wait until network status = READY
-resource "null_resource" "wait_for_network_ready" {
-  depends_on = [confluent_network.privatelink_network]
+# Wait for network status to become READY
+resource "time_sleep" "wait_30s" {
+  count           = 60 # 60 * 30s = 30 minutes total
+  create_duration = "30s"
+}
+
+data "confluent_network" "privatelink_status" {
+  id         = confluent_network.privatelink_network.id
+  depends_on = [time_sleep.wait_30s]
+}
+
+# Fail gracefully if not READY after 30 mins
+resource "null_resource" "fail_if_not_ready" {
+  count = data.confluent_network.privatelink_status.phase == "READY" ? 0 : 1
 
   provisioner "local-exec" {
-    command = <<EOT
-      status=""
-      while [ "$status" != "READY" ]; do
-        status=$(confluent network list --environment ${data.confluent_environment.env.id} -o json | jq -r '.[] | select(.display_name=="${local.network_name}") | .phase')
-        echo "Network status: $status"
-        if [ "$status" != "READY" ]; then sleep 30; fi
-      done
-    EOT
-    interpreter = ["/bin/bash", "-c"]
+    command = "echo '❌ Timeout: Network not READY within 30 minutes.' && exit 1"
   }
 }
