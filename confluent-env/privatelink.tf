@@ -19,18 +19,23 @@ resource "confluent_network" "privatelink_network" {
   connection_types = ["PRIVATELINK"]
 }
 
-# Wait for network status to become READY
+# Wait for up to 30 minutes, checking every 30 seconds
 resource "time_sleep" "wait_30s" {
-  count           = 60 # 60 * 30s = 30 minutes total
+  count           = 60 # 60 x 30s = 30 minutes
   create_duration = "30s"
 }
 
 data "confluent_network" "privatelink_status" {
-  id         = confluent_network.privatelink_network.id
+  id = confluent_network.privatelink_network.id
+
+  environment {
+    id = data.confluent_environment.env.id
+  }
+
   depends_on = [time_sleep.wait_30s]
 }
 
-# Fail gracefully if not READY after 30 mins
+# Fail if not READY after 30 minutes
 resource "null_resource" "fail_if_not_ready" {
   count = data.confluent_network.privatelink_status.phase == "READY" ? 0 : 1
 
