@@ -30,6 +30,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Download Terraform state
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-state
+          path: ./confluent-env
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
