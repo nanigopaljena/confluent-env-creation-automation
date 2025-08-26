@@ -13,3 +13,13 @@ output "service_accounts" {
     }
   }
 }
+
+output "network_id" {
+  description = "The ID of the created Confluent private link network."
+  value       = confluent_network.privatelink_network.id
+}
+
+output "network_name" {
+  description = "The name of the created Confluent private link network."
+  value       = confluent_network.privatelink_network.display_name
+}

@@ -25,7 +25,6 @@ locals {
   }
 }
 
-
 # Service Accounts
 resource "confluent_service_account" "accounts" {
   for_each = local.service_accounts
@@ -34,7 +33,7 @@ resource "confluent_service_account" "accounts" {
   description  = "Service account for ${each.key}"
 }
 
-# Env-level binding
+# Env-level binding (default role = MetricsViewer)
 resource "confluent_role_binding" "env_roles" {
   for_each = confluent_service_account.accounts
 
@@ -43,7 +42,7 @@ resource "confluent_role_binding" "env_roles" {
   role_name   = "MetricsViewer"
 }
 
-# Org-level binding (only for those with AccountAdmin)
+# Org-level binding (only for AccountAdmin roles)
 resource "confluent_role_binding" "org_account_admin" {
   for_each = {
     for name, roles in local.service_accounts :
@@ -55,4 +54,3 @@ resource "confluent_role_binding" "org_account_admin" {
   crn_pattern = "crn://confluent.cloud/organization=${var.organization_id}"
   role_name   = "AccountAdmin"
 }
-

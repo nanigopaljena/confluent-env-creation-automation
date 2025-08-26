@@ -12,7 +12,6 @@ on:
         required: true
         default: "eastus2"
 
-
 jobs:
   terraform:
     name: "Terraform Apply"
@@ -23,12 +22,30 @@ jobs:
       TF_VAR_confluent_cloud_api_key: ${{ secrets.CONFLUENT_CLOUD_API_KEY }}
       TF_VAR_confluent_cloud_api_secret: ${{ secrets.CONFLUENT_CLOUD_API_SECRET }}
       TF_VAR_organization_id: ${{ secrets.CONFLUENT_ORG_ID }}
-      TF_VAR_by_env: ${{ github.event.inputs.environment}}
+      TF_VAR_by_env: ${{ github.event.inputs.environment }}
       TF_VAR_region: ${{ github.event.inputs.region }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Install Confluent CLI
+        run: |
+          curl -sL --http1.1 https://cnfl.io/cli | sh -s -- -b /usr/local/bin
+          confluent version
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Confluent CLI Login
+        env:
+          CONFLUENT_CLOUD_API_KEY: ${{ secrets.CONFLUENT_CLOUD_API_KEY }}
+          CONFLUENT_CLOUD_API_SECRET: ${{ secrets.CONFLUENT_CLOUD_API_SECRET }}
+        run: |
+          confluent api-key store \
+            --resource cloud \
+            --api-key $CONFLUENT_CLOUD_API_KEY \
+            --api-secret $CONFLUENT_CLOUD_API_SECRET
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -44,7 +61,7 @@ jobs:
         env:
           TF_VAR_confluent_cloud_api_key: ${{ secrets.CONFLUENT_CLOUD_API_KEY }}
           TF_VAR_confluent_cloud_api_secret: ${{ secrets.CONFLUENT_CLOUD_API_SECRET }}
-        run: terraform plan -var-file="envs/${{ env.TF_VAR_by_env }}.tfvars" -out=tfplan
+        run: terraform plan -out=tfplan
 
       - name: Terraform Apply
         working-directory: ./confluent-env

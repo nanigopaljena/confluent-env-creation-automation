@@ -1,10 +1,10 @@
 variable "by_env" {
-  description = "Base environment name (e.g., prod-cval-na)"
+  description = "Target environment (dev, stage, prod)"
   type        = string
 }
 
 variable "region" {
-  description = "Cloud region (e.g., eus2)"
+  description = "Cloud region (e.g., eastus2, westus2)"
   type        = string
 }
 
