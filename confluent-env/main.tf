@@ -17,21 +17,23 @@ resource "confluent_environment" "this" {
   display_name = "${var.by_env}-${var.region}-environment"
 }
 
-# Create Service Accounts with full names (name-env-region)
-resource "confluent_service_account" "accounts" {
-  for_each = {
+# Local map: fully qualified SA names → roles
+locals {
+  service_accounts = {
     for sa in var.service_accounts :
-    "${sa.name}-${var.by_env}-${var.region}" => {
-      name  = "${sa.name}-${var.by_env}-${var.region}"
-      roles = sa.roles
-    }
+    "${sa.name}-${var.by_env}-${var.region}" => sa.roles
   }
-
-  display_name = each.value.name
-  description  = "Service account for ${each.value.name}"
 }
 
-# Environment-level role bindings
+# Service Accounts
+resource "confluent_service_account" "accounts" {
+  for_each = local.service_accounts
+
+  display_name = each.key
+  description  = "Service account for ${each.key}"
+}
+
+# Env-level binding
 resource "confluent_role_binding" "env_roles" {
   for_each = confluent_service_account.accounts
 
@@ -40,15 +42,16 @@ resource "confluent_role_binding" "env_roles" {
   role_name   = "MetricsViewer"
 }
 
-# Organization-level AccountAdmin roles
+# Org-level binding (only for those with AccountAdmin)
 resource "confluent_role_binding" "org_account_admin" {
   for_each = {
-    for name, sa in confluent_service_account.accounts :
-    name => sa
-    if contains(sa.roles, "AccountAdmin")
+    for name, roles in local.service_accounts :
+    name => roles
+    if contains(roles, "AccountAdmin")
   }
 
-  principal   = "User:${each.value.id}"
+  principal   = "User:${confluent_service_account.accounts[each.key].id}"
   crn_pattern = "crn://confluent.cloud/organization=${var.organization_id}"
   role_name   = "AccountAdmin"
 }
+

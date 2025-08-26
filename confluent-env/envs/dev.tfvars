@@ -1,4 +1,3 @@
-environment_name = "dev-environment"
 
 service_accounts = [
   {
