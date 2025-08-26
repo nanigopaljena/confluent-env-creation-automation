@@ -12,43 +12,40 @@ provider "confluent" {
   cloud_api_secret = var.confluent_cloud_api_secret
 }
 
-# -----------------------------
-# Confluent Environment
-# -----------------------------
+# Create Environment
 resource "confluent_environment" "this" {
-  display_name = var.environment_name
+  display_name = "${var.by_env}-environment"
 }
 
-# -----------------------------
-# Service Accounts
-# -----------------------------
+# Create Service Accounts
 resource "confluent_service_account" "accounts" {
-  for_each     = { for sa in var.service_accounts : sa.name => sa }
+  for_each = { for sa in var.service_accounts : sa.name => sa }
+
   display_name = each.value.name
   description  = "Service account for ${each.value.name}"
 }
 
-# -----------------------------
-# Role Bindings (one per role per SA)
-# -----------------------------
-locals {
-  role_bindings = flatten([
-    for sa in var.service_accounts : [
-      for role in sa.roles : {
-        sa_name = sa.name
-        role    = role
-      }
-    ]
-  ])
-}
-
-resource "confluent_role_binding" "bindings" {
+# Assign environment-level roles
+resource "confluent_role_binding" "env_roles" {
   for_each = {
-    for rb in local.role_bindings :
-    "${rb.sa_name}-${rb.role}" => rb
+    for sa in var.service_accounts : sa.name => sa
   }
 
-  principal   = "User:${confluent_service_account.accounts[each.value.sa_name].id}"
-  role_name   = each.value.role
+  principal   = "User:${confluent_service_account.accounts[each.key].id}"
   crn_pattern = confluent_environment.this.resource_name
+
+  # Only bind environment-safe roles
+  role_name = "MetricsViewer"
+}
+
+# Assign organization-level roles (e.g., AccountAdmin)
+resource "confluent_role_binding" "org_account_admin" {
+  for_each = {
+    for sa in var.service_accounts : sa.name => sa
+    if contains(each.value.roles, "AccountAdmin")
+  }
+
+  principal   = "User:${confluent_service_account.accounts[each.key].id}"
+  crn_pattern = "crn://confluent.cloud/organization=${var.organization_id}"
+  role_name   = "AccountAdmin"
 }

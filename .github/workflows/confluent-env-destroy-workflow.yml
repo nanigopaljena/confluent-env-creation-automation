@@ -1,19 +1,16 @@
-name: Terraform Confluent
+name: Terraform Confluent Destroy
 
 on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Target environment (dev, stage, prod)"
+        description: "Target environment to destroy (dev, stage, prod)"
         required: true
         default: "dev"
-  push:
-    branches:
-      - main
 
 jobs:
-  terraform:
-    name: "Terraform Apply"
+  terraform-destroy:
+    name: "Terraform Destroy"
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment || 'dev' }}
 
@@ -37,17 +34,9 @@ jobs:
         working-directory: ./confluent-env
         run: terraform init
 
-      - name: Terraform Plan
+      - name: Terraform Destroy
         working-directory: ./confluent-env
         env:
           TF_VAR_confluent_cloud_api_key: ${{ secrets.CONFLUENT_CLOUD_API_KEY }}
           TF_VAR_confluent_cloud_api_secret: ${{ secrets.CONFLUENT_CLOUD_API_SECRET }}
-        run: terraform plan -var-file="envs/${{ github.event.inputs.environment }}.tfvars" -out=tfplan
-
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/main'
-        working-directory: ./confluent-env
-        env:
-          TF_VAR_confluent_cloud_api_key: ${{ secrets.CONFLUENT_CLOUD_API_KEY }}
-          TF_VAR_confluent_cloud_api_secret: ${{ secrets.CONFLUENT_CLOUD_API_SECRET }}
-        run: terraform apply -auto-approve tfplan
+        run: terraform destroy -auto-approve -var-file="envs/${{ github.event.inputs.environment }}.tfvars"
