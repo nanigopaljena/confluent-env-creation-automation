@@ -1,0 +1,43 @@
+name: Terraform Confluent
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment (dev, stage, prod)"
+        required: true
+        default: "dev"
+
+jobs:
+  terraform:
+    name: "Terraform Apply"
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.4
+
+      - name: Terraform Init
+        working-directory: ./confluent-env
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: ./confluent-env
+        env:
+          TF_VAR_confluent_cloud_api_key: ${{ secrets.CONFLUENT_CLOUD_API_KEY }}
+          TF_VAR_confluent_cloud_api_secret: ${{ secrets.CONFLUENT_CLOUD_API_SECRET }}
+        run: terraform plan -var-file="envs/${{ github.event.inputs.environment }}.tfvars" -out=tfplan
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        working-directory: ./confluent-env
+        env:
+          TF_VAR_confluent_cloud_api_key: ${{ secrets.CONFLUENT_CLOUD_API_KEY }}
+          TF_VAR_confluent_cloud_api_secret: ${{ secrets.CONFLUENT_CLOUD_API_SECRET }}
+        run: terraform apply -auto-approve tfplan
