@@ -44,10 +44,7 @@ jobs:
           CONFLUENT_CLOUD_API_KEY: ${{ secrets.CONFLUENT_CLOUD_API_KEY }}
           CONFLUENT_CLOUD_API_SECRET: ${{ secrets.CONFLUENT_CLOUD_API_SECRET }}
         run: |
-          confluent api-key store \
-            --resource cloud \
-            --api-key $CONFLUENT_CLOUD_API_KEY \
-            --api-secret $CONFLUENT_CLOUD_API_SECRET
+          confluent api-key store $CONFLUENT_CLOUD_API_KEY $CONFLUENT_CLOUD_API_SECRET --resource cloud --force
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
