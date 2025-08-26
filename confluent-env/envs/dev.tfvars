@@ -1,4 +1,3 @@
-
 service_accounts = [
   {
     name  = "env-automation"

@@ -25,6 +25,7 @@ locals {
   }
 }
 
+
 # Service Accounts
 resource "confluent_service_account" "accounts" {
   for_each = local.service_accounts
