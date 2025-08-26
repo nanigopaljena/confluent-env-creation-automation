@@ -42,7 +42,7 @@ resource "confluent_role_binding" "env_roles" {
 resource "confluent_role_binding" "org_account_admin" {
   for_each = {
     for sa in var.service_accounts : sa.name => sa
-    if contains(each.value.roles, "AccountAdmin")
+    if contains(sa.roles, "AccountAdmin")
   }
 
   principal   = "User:${confluent_service_account.accounts[each.key].id}"
