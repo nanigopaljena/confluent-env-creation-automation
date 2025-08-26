@@ -42,7 +42,7 @@ jobs:
         env:
           TF_VAR_confluent_cloud_api_key: ${{ secrets.CONFLUENT_CLOUD_API_KEY }}
           TF_VAR_confluent_cloud_api_secret: ${{ secrets.CONFLUENT_CLOUD_API_SECRET }}
-        run: terraform plan -var-file="envs/${{ github.event.inputs.environment }}.tfvars" -out=tfplan
+        run: terraform plan -var-file="envs/${{ env.TF_VAR_by_env }}.tfvars" -out=tfplan
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
