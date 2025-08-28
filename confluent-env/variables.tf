@@ -32,7 +32,7 @@ variable "confluent_cloud_api_secret" {
   sensitive   = true
 }
 
-variable "organization_id" {
+variable "confluent_organization_id" {
   description = "Confluent Cloud Organization ID"
   type        = string
 }
