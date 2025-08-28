@@ -21,9 +21,9 @@ resource "confluent_network" "privatelink_network" {
   connection_types = ["PRIVATELINK"]
 }
 
+# Create PrivateLink Access for Azure subscription
 resource "confluent_private_link_access" "azure_pla" {
-  display_name = local.network_name
-  cloud        = "AZURE"
+  display_name = "${local.env_name}-pla"
 
   environment {
     id = data.confluent_environment.env.id
@@ -37,4 +37,3 @@ resource "confluent_private_link_access" "azure_pla" {
     subscription = var.azure_subscription_id
   }
 }
-
