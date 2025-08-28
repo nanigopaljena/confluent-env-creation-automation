@@ -4,20 +4,22 @@
 #   resource_group_name = var.key_vault_rg
 # }
 
-# API Keys for each Service Account
+# Create API keys for each service account
 resource "confluent_api_key" "sa_keys" {
   for_each = confluent_service_account.accounts
 
   display_name = "${each.key}-api-key"
   description  = "API Key for ${each.key}"
+
   owner {
     id          = each.value.id
     api_version = each.value.api_version
     kind        = each.value.kind
   }
 
-  depends_on = [confluent_role_binding.env_roles]
+  depends_on = [confluent_role_binding.bindings]
 }
+
 
 # # Store API Key in Azure Key Vault
 # resource "azurerm_key_vault_secret" "sa_api_key" {
