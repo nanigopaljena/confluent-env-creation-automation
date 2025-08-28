@@ -25,3 +25,27 @@ output "service_account_api_keys" {
   }
   sensitive = true
 }
+
+output "network_id" {
+  description = "The ID of the created Confluent PrivateLink network."
+  value       = confluent_network.privatelink_network.id
+}
+
+output "network_name" {
+  description = "The name of the created Confluent PrivateLink network."
+  value       = confluent_network.privatelink_network.display_name
+}
+
+output "private_link_access_id" {
+  description = "The ID of the Private Link Access created."
+  value       = confluent_private_link_access.azure_pla.id
+}
+
+output "dns_info" {
+  description = "DNS and alias details needed for SDS ticket."
+  value = {
+    dns_domain       = confluent_network.privatelink_network.dns_domain
+    zonal_subdomains = confluent_network.privatelink_network.zonal_subdomains
+    service_aliases  = confluent_network.privatelink_network.azure[0].private_link_service_aliases
+  }
+}
