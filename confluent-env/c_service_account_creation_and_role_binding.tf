@@ -32,7 +32,7 @@ resource "confluent_role_binding" "bindings" {
   principal = "User:${confluent_service_account.accounts[replace(each.value.name, "-${var.by_env}-${var.region}-sa", "")].id}"
 
   crn_pattern = (
-    each.value.role == "AccountAdmin"
+    contains(["AccountAdmin", "ResourceKeyAdmin"], each.value.role)
       ? "crn://confluent.cloud/organization=${var.organization_id}"
       : confluent_environment.this.resource_name
   )
