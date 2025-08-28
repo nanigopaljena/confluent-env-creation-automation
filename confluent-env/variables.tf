@@ -38,39 +38,39 @@ variable "organization_id" {
 }
 
 # Azure authentication (GitHub secrets)
-variable "azure_subscription_id" {
-  description = "Azure Subscription ID"
-  type        = string
-  sensitive   = true
-}
-
-variable "azure_tenant_id" {
-  description = "Azure Tenant ID"
-  type        = string
-  sensitive   = true
-}
-
-variable "azure_client_id" {
-  description = "Azure Service Principal App ID"
-  type        = string
-  sensitive   = true
-}
-
-variable "azure_client_secret" {
-  description = "Azure Service Principal Secret"
-  type        = string
-  sensitive   = true
-}
-
-# Key Vault info
-variable "key_vault_name" {
-  description = "Azure Key Vault name"
-  type        = string
-}
-
-variable "key_vault_rg" {
-  description = "Resource Group where the Key Vault resides"
-  type        = string
-}
+# variable "azure_subscription_id" {
+#   description = "Azure Subscription ID"
+#   type        = string
+#   sensitive   = true
+# }
+#
+# variable "azure_tenant_id" {
+#   description = "Azure Tenant ID"
+#   type        = string
+#   sensitive   = true
+# }
+#
+# variable "azure_client_id" {
+#   description = "Azure Service Principal App ID"
+#   type        = string
+#   sensitive   = true
+# }
+#
+# variable "azure_client_secret" {
+#   description = "Azure Service Principal Secret"
+#   type        = string
+#   sensitive   = true
+# }
+#
+# # Key Vault info
+# variable "key_vault_name" {
+#   description = "Azure Key Vault name"
+#   type        = string
+# }
+#
+# variable "key_vault_rg" {
+#   description = "Resource Group where the Key Vault resides"
+#   type        = string
+# }
 
 
