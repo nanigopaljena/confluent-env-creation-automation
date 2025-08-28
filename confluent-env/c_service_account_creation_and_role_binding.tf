@@ -1,23 +1,3 @@
-terraform {
-  required_providers {
-    confluent = {
-      source  = "confluentinc/confluent"
-      version = "2.10.0"
-    }
-  }
-}
-
-provider "confluent" {
-  cloud_api_key    = var.confluent_cloud_api_key
-  cloud_api_secret = var.confluent_cloud_api_secret
-}
-
-# Create Environment
-resource "confluent_environment" "this" {
-  display_name = "${var.by_env}-${var.region}-environment"
-}
-
-# Local map: fully qualified SA names → roles
 locals {
   service_accounts = {
     for sa in var.service_accounts :
@@ -33,7 +13,7 @@ resource "confluent_service_account" "accounts" {
   description  = "Service account for ${each.key}"
 }
 
-# Env-level binding (default role = MetricsViewer)
+# Env-level binding (default = MetricsViewer)
 resource "confluent_role_binding" "env_roles" {
   for_each = confluent_service_account.accounts
 
@@ -53,19 +33,4 @@ resource "confluent_role_binding" "org_account_admin" {
   principal   = "User:${confluent_service_account.accounts[each.key].id}"
   crn_pattern = "crn://confluent.cloud/organization=${var.organization_id}"
   role_name   = "AccountAdmin"
-}
-
-# API Keys for each Service Account
-resource "confluent_api_key" "sa_keys" {
-  for_each = confluent_service_account.accounts
-
-  display_name = "${each.key}-api-key"
-  description  = "API Key for ${each.key}"
-  owner {
-    id          = each.value.id
-    api_version = each.value.api_version
-    kind        = each.value.kind
-  }
-
-  depends_on = [confluent_role_binding.env_roles]
 }
