@@ -9,14 +9,21 @@ resource "confluent_service_account" "accounts" {
 # Flatten account + roles into { "account.role" => {name, role} }
 locals {
   account_roles = {
-    for sa in var.service_accounts :
-    for role in sa.roles :
-    "${sa.name}.${role}" => {
-      name = sa.name
-      role = role
+    for ar in flatten([
+      for sa in var.service_accounts : [
+        for role in sa.roles : {
+          key  = "${sa.name}.${role}"
+          name = sa.name
+          role = role
+        }
+      ]
+    ]) : ar.key => {
+      name = ar.name
+      role = ar.role
     }
   }
 }
+
 
 # Create role bindings
 resource "confluent_role_binding" "bindings" {
