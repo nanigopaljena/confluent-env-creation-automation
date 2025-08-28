@@ -34,7 +34,7 @@ resource "confluent_private_link_access" "azure_pla" {
   }
 
   azure {
-    subscription = var.subscription_id
+    subscription = var.azure_subscription_id
   }
 }
 
