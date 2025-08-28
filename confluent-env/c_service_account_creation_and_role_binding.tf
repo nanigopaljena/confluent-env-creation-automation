@@ -2,7 +2,7 @@
 resource "confluent_service_account" "accounts" {
   for_each = { for sa in var.service_accounts : sa.name => sa }
 
-  display_name = each.value.name
+  display_name = "${each.value.name}-${var.by_env}-${var.region}-sa"
   description  = "Service account for ${each.value.name}"
 }
 
@@ -12,8 +12,8 @@ locals {
     for ar in flatten([
       for sa in var.service_accounts : [
         for role in sa.roles : {
-          key  = "${sa.name}.${role}"
-          name = sa.name
+          key  = "${sa.name}-${var.by_env}-${var.region}-sa.${role}"
+          name = "${sa.name}-${var.by_env}-${var.region}-sa"
           role = role
         }
       ]
@@ -24,12 +24,12 @@ locals {
   }
 }
 
-
 # Create role bindings
 resource "confluent_role_binding" "bindings" {
   for_each = local.account_roles
 
-  principal = "User:${confluent_service_account.accounts[each.value.name].id}"
+  # Look up service account by its *base name* (from var.service_accounts)
+  principal = "User:${confluent_service_account.accounts[replace(each.value.name, "-${var.by_env}-${var.region}-sa", "")].id}"
 
   crn_pattern = (
     each.value.role == "AccountAdmin"

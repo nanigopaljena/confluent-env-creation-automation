@@ -8,8 +8,8 @@
 resource "confluent_api_key" "sa_keys" {
   for_each = confluent_service_account.accounts
 
-  display_name = "${each.key}-api-key"
-  description  = "API Key for ${each.key}"
+  display_name = "${each.key}-${var.by_env}-${var.region}-sa-api-key"
+  description  = "API Key for ${each.key}-${var.by_env}-${var.region}-sa"
 
   owner {
     id          = each.value.id
@@ -19,6 +19,7 @@ resource "confluent_api_key" "sa_keys" {
 
   depends_on = [confluent_role_binding.bindings]
 }
+
 
 
 # # Store API Key in Azure Key Vault
