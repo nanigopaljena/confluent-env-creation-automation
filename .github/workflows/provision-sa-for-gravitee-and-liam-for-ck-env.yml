@@ -43,8 +43,8 @@ jobs:
     environment: ${{ github.event.inputs.environment }}
 
     env:
-      TF_VAR_confluent_cloud_api_key: ${{ secrets.CK_GLOBAL_CLOUD_ROSOURCE_MANAGER_API_KEY }}
-      TF_VAR_confluent_cloud_api_secret: ${{ secrets.CK_GLOBAL_CLOUD_ROSOURCE_MANAGER_API_SECRET }}
+      TF_VAR_confluent_cloud_api_key: ${{ secrets.CLUSTER_API_KEY }}
+      TF_VAR_confluent_cloud_api_secret: ${{ secrets.CLUSTER_API_SECRET }}
       TF_VAR_confluent_organization_id: ${{ secrets.CK_ORG_ID }}
       TF_VAR_confluent_environment_id: ${{ github.event.inputs.ckEnvironmentId }}
       TF_VAR_confluent_environment_name: ${{ github.event.inputs.ckEnvironmentName }}
