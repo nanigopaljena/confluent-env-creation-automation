@@ -6,7 +6,7 @@ resource "confluent_kafka_topic" "liam_default" {
   }
 
   kafka_cluster {
-    id = var.kafka_cluster_id
+    id = var.confluent_kafka_cluster_id
   }
 
   topic_name       = "${var.by_env}.${var.region}.global.liam.gravitee-audit.event"
