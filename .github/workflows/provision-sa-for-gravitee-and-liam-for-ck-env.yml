@@ -48,8 +48,7 @@ jobs:
     steps:
       - name: Extract region from environmentName
         id: extract_region
-        run: |
-          echo "region=$(echo '${{ github.event.inputs.environmentName }}' | awk -F'-' '{print $NF}')" >> $GITHUB_OUTPUT'echo
+        run: echo "region=$(echo '${{ github.event.inputs.environmentName }}' | awk -F'-' '{print $NF}')" >> $GITHUB_OUTPUT
 
       - name: Set region env
         run: echo "TF_VAR_region=${{ steps.extract_region.outputs.region }}" >> $GITHUB_ENV
