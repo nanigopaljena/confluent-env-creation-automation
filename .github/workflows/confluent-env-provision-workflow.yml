@@ -1,4 +1,4 @@
-name: Terraform Confluent
+name: Confluent Environment Provisioning
 
 on:
   workflow_dispatch:
@@ -6,16 +6,20 @@ on:
       environment:
         description: "Target environment (dev, stage, prod)"
         required: true
-        default: "dev"
+        default: "sbx"
+      geography:
+        description: "Cloud geography (e.g., us, eu, ap, au)"
+        required: true
+        default: "us"
       region:
-        description: "Cloud region (e.g., eastus2, westus2)"
+        description: "Cloud region code (e.g., eastus2, centralus)"
         required: true
         default: "eastus2"
 
 jobs:
   terraform:
-    name: "Terraform Apply"
-    runs-on: ubuntu-latest
+    name: "Run Terraform to Provision Confluent Environment"
+    runs-on: az-dev-ubuntu-24
     environment: ${{ github.event.inputs.environment }}
 
     env:
@@ -24,6 +28,7 @@ jobs:
       TF_VAR_confluent_organization_id: ${{ secrets.CONFLUENT_ORG_ID }}
       TF_VAR_azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       TF_VAR_by_env: ${{ github.event.inputs.environment }}
+      TF_VAR_geography: ${{ github.event.inputs.geography }}
       TF_VAR_region: ${{ github.event.inputs.region }}
 
     steps:
@@ -36,19 +41,19 @@ jobs:
           terraform_version: 1.7.4
 
       - name: Terraform Init
-        working-directory: ./confluent-env
+        working-directory: ./terraform/confluent-env-provisioning
         run: terraform init
 
       - name: Terraform Plan
-        working-directory: ./confluent-env
+        working-directory: ./terraform/confluent-env-provisioning
         env:
-          TF_VAR_confluent_cloud_api_key: ${{ secrets.CONFLUENT_CLOUD_API_KEY }}
-          TF_VAR_confluent_cloud_api_secret: ${{ secrets.CONFLUENT_CLOUD_API_SECRET }}
+          TF_VAR_confluent_cloud_api_key: ${{ env.TF_VAR_confluent_cloud_api_key }}
+          TF_VAR_confluent_cloud_api_secret: ${{ env.TF_VAR_confluent_cloud_api_secret }}
         run: terraform plan -out=tfplan
 
       - name: Terraform Apply
-        working-directory: ./confluent-env
+        working-directory: ./terraform/confluent-env-provisioning
         env:
-          TF_VAR_confluent_cloud_api_key: ${{ secrets.CONFLUENT_CLOUD_API_KEY }}
-          TF_VAR_confluent_cloud_api_secret: ${{ secrets.CONFLUENT_CLOUD_API_SECRET }}
+          TF_VAR_confluent_cloud_api_key: ${{ env.TF_VAR_confluent_cloud_api_key }}
+          TF_VAR_confluent_cloud_api_secret: ${{ env.TF_VAR_confluent_cloud_api_secret }}
         run: terraform apply -auto-approve tfplan

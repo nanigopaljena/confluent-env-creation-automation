@@ -1,0 +1,81 @@
+name: Terraform Confluent
+
+on:
+  workflow_dispatch:
+    inputs:
+      environmentId:
+        description: "Environment Id for which service account is required(e.g., env-abcd12)"
+        required: true
+        default: "env-abcd12"
+      environmentName:
+        description: "Environment name for which service account is required(e.g., sbx-us-eastus2)"
+        required: true
+        default: "sbx-us-eastus2"
+      sa-for-gravitee:
+        description: 'Provision service account for Gravitee?'
+        type: boolean
+        default: true
+      sa-for-liam:
+        description: 'Provision service account for Gravitee?'
+        type: boolean
+        default: true
+      liam-project-name:
+        description: "LIAM project name (e.g., liam-dev)"
+        required: true
+        default: "liam-dev"
+      default-topic-for-liam:
+        description: 'Provision default topic for LIAM?'
+        type: boolean
+        default: true
+
+jobs:
+  terraform:
+    name: "Terraform Apply"
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    env:
+      TF_VAR_confluent_cloud_api_key: ${{ secrets.CK_GLOBAL_CLOUD_ROSOURCE_MANAGER_API_KEY }}
+      TF_VAR_confluent_cloud_api_secret: ${{ secrets.CK_GLOBAL_CLOUD_ROSOURCE_MANAGER_API_SECRET }}
+      TF_VAR_confluent_organization_id: ${{ secrets.CK_ORG_ID }}
+      TF_VAR_azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_by_env: ${{ github.event.inputs.environment }}
+      TF_VAR_liam_sa_for_gravitee: ${{ github.event.inputs.sa-for-gravitee }}
+      TF_VAR_liam_sa_for_liam: ${{ github.event.inputs.sa-for-liam }}
+      TF_VAR_liam_project_name: ${{ github.event.inputs.liam-project-name }}
+      TF_VAR_default_topic_for_liam: ${{ github.event.inputs.default-topic-for-liam }}
+
+    steps:
+      - name: Extract region from environmentName
+        id: extract_region
+        run: |
+          echo "region=$(echo '${{ github.event.inputs.environmentName }}' | awk -F'-' '{print $NF}')" >> $GITHUB_OUTPUT'echo
+
+      - name: Set region env
+        run: echo "TF_VAR_region=${{ steps.extract_region.outputs.region }}" >> $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.4
+
+      - name: Terraform Init
+        working-directory: ./terraform/gravitee-and-liam-sa-provisioning
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: ./terraform/gravitee-and-liam-sa-provisioning
+        env:
+          TF_VAR_confluent_cloud_api_key: ${{ secrets.CONFLUENT_CLOUD_API_KEY }}
+          TF_VAR_confluent_cloud_api_secret: ${{ secrets.CONFLUENT_CLOUD_API_SECRET }}
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        working-directory: ./terraform/gravitee-and-liam-sa-provisioning
+        env:
+          TF_VAR_confluent_cloud_api_key: ${{ secrets.CONFLUENT_CLOUD_API_KEY }}
+          TF_VAR_confluent_cloud_api_secret: ${{ secrets.CONFLUENT_CLOUD_API_SECRET }}
+        run: terraform apply -auto-approve tfplan
