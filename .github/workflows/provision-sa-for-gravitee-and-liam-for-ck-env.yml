@@ -3,15 +3,19 @@ name: Terraform Confluent
 on:
   workflow_dispatch:
     inputs:
-      environmentId:
+      environemnt:
+        description: "Git environment (dev, sbx, tst, prod)"
+        required: true
+        default: "dev"
+      ckEnvironmentId:
         description: "Environment Id for which service account is required(e.g., env-abcd12)"
         required: true
         default: "env-xyn1gz"
-      environmentName:
+      ckEnvironmentName:
         description: "Environment name for which service account is required(e.g., sbx-us-eastus2)"
         required: true
         default: "dev-us-centralus"
-      cluserId:
+      ckCluserId:
         description: "Cluster Id for which service account is required(e.g., lkc-abcd12)"
         required: false
         default: "lkc-g0gd6v"
@@ -42,9 +46,9 @@ jobs:
       TF_VAR_confluent_cloud_api_key: ${{ secrets.CK_GLOBAL_CLOUD_ROSOURCE_MANAGER_API_KEY }}
       TF_VAR_confluent_cloud_api_secret: ${{ secrets.CK_GLOBAL_CLOUD_ROSOURCE_MANAGER_API_SECRET }}
       TF_VAR_confluent_organization_id: ${{ secrets.CK_ORG_ID }}
-      TF_VAR_confluent_environment_id: ${{ github.event.inputs.environmentId }}
-      TF_VAR_confluent_environment_name: ${{ github.event.inputs.environmentName }}
-      TF_VAR_confluent_kafka_cluster_id: ${{ github.event.inputs.cluserId }}
+      TF_VAR_confluent_environment_id: ${{ github.event.inputs.ckEnvironmentId }}
+      TF_VAR_confluent_environment_name: ${{ github.event.inputs.ckEnvironmentName }}
+      TF_VAR_confluent_kafka_cluster_id: ${{ github.event.inputs.ckCluserId }}
       TF_VAR_azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       TF_VAR_by_env: ${{ github.event.inputs.environment }}
       TF_VAR_liam_sa_for_gravitee: ${{ github.event.inputs.saForGravitee }}
