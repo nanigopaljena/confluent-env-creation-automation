@@ -19,7 +19,7 @@ variable "confluent_environment_id" {
   description = "Confluent Cloud environment ID (e.g. env-abcd12)"
 }
 
-variable "kafka_cluster_id" {
+variable "confluent_kafka_cluster_id" {
   description = "Kafka cluster ID"
 }
 
