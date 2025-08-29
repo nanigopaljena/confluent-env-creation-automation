@@ -54,7 +54,7 @@ jobs:
       TF_VAR_by_env: ${{ github.event.inputs.environment }}
       TF_VAR_sa_for_gravitee: ${{ github.event.inputs.saForGravitee }}
       TF_VAR_sa_for_liam: ${{ github.event.inputs.saForLiam }}
-      TF_VAR_project_name: ${{ github.event.inputs.liamProjectName }}
+      TF_VAR_liam_project_name: ${{ github.event.inputs.liamProjectName }}
       TF_VAR_default_topic_for_liam: ${{ github.event.inputs.defaultTopicForLiam }}
 
     steps:
