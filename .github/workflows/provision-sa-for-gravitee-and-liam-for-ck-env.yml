@@ -45,7 +45,7 @@ jobs:
     env:
       TF_VAR_confluent_cloud_api_key: ${{ secrets.CLUSTER_API_KEY }}
       TF_VAR_confluent_cloud_api_secret: ${{ secrets.CLUSTER_API_SECRET }}
-      TF_VAR_confluent_organization_id: ${{ secrets.CK_ORG_ID }}
+      TF_VAR_confluent_organization_id: ${{ secrets.CONFLUENT_ORG_ID }}
       TF_VAR_confluent_environment_id: ${{ github.event.inputs.ckEnvironmentId }}
       TF_VAR_confluent_environment_name: ${{ github.event.inputs.ckEnvironmentName }}
       TF_VAR_confluent_kafka_cluster_id: ${{ github.event.inputs.ckCluserId }}
@@ -60,6 +60,9 @@ jobs:
       - name: Extract region from environmentName
         id: extract_region
         run: echo "region=$(echo '${{ github.event.inputs.environmentName }}' | awk -F'-' '{print $NF}')" >> $GITHUB_OUTPUT
+
+      - name: Print extracted region
+        run: echo "${{ steps.extract_region.outputs.region }}"
 
       - name: Set region env
         run: echo "TF_VAR_region=${{ steps.extract_region.outputs.region }}" >> $GITHUB_ENV
