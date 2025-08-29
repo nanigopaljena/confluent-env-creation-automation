@@ -1,4 +1,4 @@
-resource "confluent_kafka_topic" "liam_default" {
+resource "confluent_kafka_topic" "liam_default_topic" {
   count = var.default_topic_for_liam ? 1 : 0
 
   kafka_cluster {
