@@ -1,9 +1,15 @@
 variable "confluent_cloud_api_key" {}
 variable "confluent_cloud_api_secret" {}
 
+variable "by_env" {
+  description = "Target environment (dev, stage, prod)"
+  type        = string
+}
+
 variable "environment_name" {
   description = "Environment name (e.g. sbx-us-eastus2)"
 }
+
 
 variable "region" {
   description = "Region (e.g. eastus2)"

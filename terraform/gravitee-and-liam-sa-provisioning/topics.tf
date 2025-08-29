@@ -9,6 +9,6 @@ resource "confluent_kafka_topic" "liam_default" {
     id = var.kafka_cluster_id
   }
 
-  topic_name       = "${var.environment_name}.${var.region}.global.liam.gravitee-audit.event"
+  topic_name       = "${var.by_env}.${var.region}.global.liam.gravitee-audit.event"
   partitions_count = 3
 }
