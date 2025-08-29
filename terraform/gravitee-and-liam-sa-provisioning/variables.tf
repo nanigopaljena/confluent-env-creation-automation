@@ -9,7 +9,7 @@ variable "region" {
   description = "Region (e.g. eastus2)"
 }
 
-variable "environment_id" {
+variable "confluent_environment_id" {
   description = "Confluent Cloud environment ID (e.g. env-abcd12)"
 }
 

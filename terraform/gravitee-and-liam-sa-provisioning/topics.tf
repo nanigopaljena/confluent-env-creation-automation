@@ -2,7 +2,7 @@ resource "confluent_kafka_topic" "liam_default" {
   count = var.default_topic_for_liam ? 1 : 0
 
   environment {
-    id = var.environment_id
+    id = var.confluent_environment_id
   }
 
   kafka_cluster {
