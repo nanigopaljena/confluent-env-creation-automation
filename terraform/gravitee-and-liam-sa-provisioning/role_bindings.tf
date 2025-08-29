@@ -10,8 +10,7 @@ resource "confluent_role_binding" "liam_topic_owner" {
 
   principal   = "User:${confluent_service_account.liam[0].id}"
   role_name   = "ResourceOwner"
-  crn_pattern = "${local.crn_pattern}/topic=${local.liam_topic_prefix}*"
-  pattern_type = "PREFIXED"
+  crn_pattern = "${local.crn_pattern}/topic=${local.liam_topic_prefix}"
 }
 
 # LIAM owns its consumer group(s)
@@ -20,8 +19,7 @@ resource "confluent_role_binding" "liam_consumer_group_owner" {
 
   principal   = "User:${confluent_service_account.liam[0].id}"
   role_name   = "ResourceOwner"
-  crn_pattern = "${local.crn_pattern}/consumer-group=${var.liam_project_name}*"
-  pattern_type = "PREFIXED"
+  crn_pattern = "${local.crn_pattern}/consumer-group=${var.liam_project_name}"
 }
 
 # Gravitee owns its consumer group(s)
@@ -30,6 +28,5 @@ resource "confluent_role_binding" "gravitee_consumer_group_owner" {
 
   principal   = "User:${confluent_service_account.gravitee[0].id}"
   role_name   = "ResourceOwner"
-  crn_pattern = "${local.crn_pattern}/consumer-group=*"
-  pattern_type = "PREFIXED"
+  crn_pattern = "${local.crn_pattern}/consumer-group=test"
 }
