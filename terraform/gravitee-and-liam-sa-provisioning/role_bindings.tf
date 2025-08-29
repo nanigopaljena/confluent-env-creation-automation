@@ -17,7 +17,7 @@ resource "confluent_role_binding" "liam_consumer_group_owner" {
 
   principal   = "User:${confluent_service_account.liam[0].id}"
   role_name   = "ResourceOwner"
-  crn_pattern = "${var.kafka_cluster_crn}/consumer-group=${var.liam_project_name}*"
+  crn_pattern = "crn://confluent.cloud/organization=${var.confluent_organization_id}/environment=${var.confluent_environment_id}/kafka=${var.kafka_cluster_id}/consumer-group=${var.liam_project_name}*"
 }
 
 
@@ -31,5 +31,6 @@ resource "confluent_role_binding" "gravitee_consumer_group_owner" {
 
   principal   = "User:${confluent_service_account.gravitee[0].id}"
   role_name   = "ResourceOwner"
-  crn_pattern = "${var.kafka_cluster_crn}/consumer-group=*"
+  crn_pattern = "crn://confluent.cloud/organization=${var.confluent_organization_id}/environment=${var.confluent_environment_id}/kafka=${var.kafka_cluster_id}/consumer-group=*"
+
 }
