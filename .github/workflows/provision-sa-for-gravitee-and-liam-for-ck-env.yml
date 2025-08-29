@@ -24,7 +24,7 @@ on:
         type: boolean
         default: true
       saForLiam:
-        description: 'Provision service account for Gravitee?'
+        description: 'Provision service account for LIAM?'
         type: boolean
         default: true
       liamProjectName:
