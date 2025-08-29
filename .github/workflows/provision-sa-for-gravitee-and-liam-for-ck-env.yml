@@ -6,11 +6,11 @@ on:
       environmentId:
         description: "Environment Id for which service account is required(e.g., env-abcd12)"
         required: true
-        default: "env-abcd12"
+        default: "env-xyn1gz"
       environmentName:
         description: "Environment name for which service account is required(e.g., sbx-us-eastus2)"
         required: true
-        default: "sbx-us-eastus2"
+        default: "dev-us-centralus"
       sa-for-gravitee:
         description: 'Provision service account for Gravitee?'
         type: boolean

@@ -23,10 +23,6 @@ variable "kafka_cluster_id" {
   description = "Kafka cluster ID"
 }
 
-variable "kafka_cluster_crn" {
-  description = "Kafka cluster CRN"
-}
-
 variable "sa_for_gravitee" {
   type    = bool
   default = false
