@@ -3,7 +3,7 @@ name: Terraform Confluent
 on:
   workflow_dispatch:
     inputs:
-      environemnt:
+      environment:
         description: "Git environment (dev, sbx, tst, prod)"
         required: true
         default: "dev"
