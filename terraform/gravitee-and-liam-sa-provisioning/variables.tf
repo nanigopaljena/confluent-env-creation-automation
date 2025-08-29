@@ -6,7 +6,7 @@ variable "by_env" {
   type        = string
 }
 
-variable "environment_name" {
+variable "confluent_environment_name" {
   description = "Environment name (e.g. sbx-us-eastus2)"
 }
 
