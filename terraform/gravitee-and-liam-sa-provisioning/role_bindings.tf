@@ -1,7 +1,7 @@
 locals {
   # Split on "." and keep only the first 4 parts (up to liam)
 #   liam_topic_prefix = join(".", slice(split(".", confluent_kafka_topic.liam_default_topic[0].topic_name), 0, 4))
-  crn_pattern = "crn://confluent.cloud/organization=${var.confluent_organization_id}/environment=${var.confluent_environment_id}/kafka=${var.confluent_kafka_cluster_id}"
+  crn_pattern = "crn://confluent.cloud/organization=${var.confluent_organization_id}/environment=${var.confluent_environment_id}/cloud-cluster=${var.confluent_kafka_cluster_id}"
 #   crn_pattern = "crn://confluent.cloud/organization=${var.confluent_organization_id}"
 }
 
