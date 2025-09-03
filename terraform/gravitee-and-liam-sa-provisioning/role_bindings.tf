@@ -11,7 +11,7 @@ resource "confluent_role_binding" "liam_topic_owner" {
 
   principal   = "User:${confluent_service_account.liam[0].id}"
   role_name   = "ResourceOwner"
-  crn_pattern = "${local.crn_pattern}/topic=${local.liam_topic_prefix}"
+  crn_pattern = "${local.crn_pattern}/topic=${confluent_kafka_topic.liam_default_topic[0].topic_name}"
 
   depends_on = [
     confluent_service_account.liam,
