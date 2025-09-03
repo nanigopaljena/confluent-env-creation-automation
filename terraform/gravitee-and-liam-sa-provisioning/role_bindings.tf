@@ -1,8 +1,8 @@
 locals {
   # Split on "." and keep only the first 4 parts (up to liam)
   liam_topic_prefix = join(".", slice(split(".", confluent_kafka_topic.liam_default_topic[0].topic_name), 0, 4))
-#   crn_pattern = "crn://confluent.cloud/organization=${var.confluent_organization_id}/environment=${var.confluent_environment_id}/kafka-cluster=${var.confluent_kafka_cluster_id}"
-  crn_pattern = "crn://confluent.cloud/organization=${var.confluent_organization_id}"
+  crn_pattern = "crn://confluent.cloud/organization=${var.confluent_organization_id}/environment=${var.confluent_environment_id}/kafka-cluster=${var.confluent_kafka_cluster_id}"
+#   crn_pattern = "crn://confluent.cloud/organization=${var.confluent_organization_id}"
 }
 
 # LIAM owns its topic
@@ -10,37 +10,37 @@ resource "confluent_role_binding" "liam_topic_owner" {
   count = var.sa_for_liam && var.default_topic_for_liam ? 1 : 0
 
   principal   = "User:${confluent_service_account.liam[0].id}"
-  role_name   = "DeveloperManage"
-  crn_pattern = "${local.crn_pattern}/topic=${local.liam_topic_prefix}*"
+  role_name   = "ResourceOwner"
+  crn_pattern = "${local.crn_pattern}/topic=${local.liam_topic_prefix}"
 
   depends_on = [
     confluent_service_account.liam,
     confluent_kafka_topic.liam_default_topic
   ]
 }
-
-resource "confluent_role_binding" "liam_consumer_group_owner" {
-  count = var.sa_for_liam ? 1 : 0
-
-  principal   = "User:${confluent_service_account.liam[0].id}"
-  role_name   = "DeveloperManage" # ResourceOwner is not valid for consumer-groups
-  crn_pattern = "${local.crn_pattern}/consumer-group=${var.liam_project_name}*"
-
-  depends_on = [
-    confluent_service_account.liam
-  ]
-}
-
-
-resource "confluent_role_binding" "gravitee_consumer_group_owner" {
-  count = var.sa_for_gravitee ? 1 : 0
-
-  principal   = "User:${confluent_service_account.gravitee[0].id}"
-  role_name   = "DeveloperManage"
-  crn_pattern = "${local.crn_pattern}/consumer-group=*"
-
-  depends_on = [
-    confluent_service_account.gravitee
-  ]
-}
+#
+# resource "confluent_role_binding" "liam_consumer_group_owner" {
+#   count = var.sa_for_liam ? 1 : 0
+#
+#   principal   = "User:${confluent_service_account.liam[0].id}"
+#   role_name   = "ResourceOwner" # ResourceOwner is not valid for consumer-groups
+#   crn_pattern = "${local.crn_pattern}/consumer-group=${var.liam_project_name}*"
+#
+#   depends_on = [
+#     confluent_service_account.liam
+#   ]
+# }
+#
+#
+# resource "confluent_role_binding" "gravitee_consumer_group_owner" {
+#   count = var.sa_for_gravitee ? 1 : 0
+#
+#   principal   = "User:${confluent_service_account.gravitee[0].id}"
+#   role_name   = "DeveloperManage"
+#   crn_pattern = "${local.crn_pattern}/consumer-group=*"
+#
+#   depends_on = [
+#     confluent_service_account.gravitee
+#   ]
+# }
 
