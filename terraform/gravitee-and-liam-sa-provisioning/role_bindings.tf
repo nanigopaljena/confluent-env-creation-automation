@@ -9,7 +9,7 @@ resource "confluent_role_binding" "liam_topic_owner" {
   count = var.sa_for_liam && var.default_topic_for_liam ? 1 : 0
 
   principal   = "User:${confluent_service_account.liam[0].id}"
-  role_name   = "ResourceOwner"
+  role_name   = "DeveloperManage"
   crn_pattern = "${local.crn_pattern}/topic=${local.liam_topic_prefix}*"
 
   depends_on = [
@@ -22,7 +22,7 @@ resource "confluent_role_binding" "liam_consumer_group_owner" {
   count = var.sa_for_liam ? 1 : 0
 
   principal   = "User:${confluent_service_account.liam[0].id}"
-  role_name   = "ResourceOwner" # ResourceOwner is not valid for consumer-groups
+  role_name   = "DeveloperManage" # ResourceOwner is not valid for consumer-groups
   crn_pattern = "${local.crn_pattern}/consumer-group=${var.liam_project_name}*"
 
   depends_on = [
@@ -35,7 +35,7 @@ resource "confluent_role_binding" "gravitee_consumer_group_owner" {
   count = var.sa_for_gravitee ? 1 : 0
 
   principal   = "User:${confluent_service_account.gravitee[0].id}"
-  role_name   = "ResourceOwner"
+  role_name   = "DeveloperManage"
   crn_pattern = "${local.crn_pattern}/consumer-group=*"
 
   depends_on = [
