@@ -18,7 +18,7 @@ on:
       ckClusterId:
         description: "Cluster Id for which service account is required (e.g., lkc-abcd12)"
         required: true
-        default: "lkc-g0gd6v"
+        default: "lkc-x3ozxk"
       saForGravitee:
         description: "Provision service account for Gravitee?"
         type: boolean
