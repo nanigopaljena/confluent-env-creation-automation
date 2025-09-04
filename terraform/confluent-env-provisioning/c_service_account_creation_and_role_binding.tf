@@ -1,41 +1,25 @@
-# Create service accounts
-resource "confluent_service_account" "accounts" {
-  for_each = { for sa in var.service_accounts : sa.name => sa }
-
-  display_name = "${each.value.name}-${var.by_env}-${var.geography}-${var.region}-sa"
-  description  = "Service account for ${each.value.name}"
-}
-
-# Flatten account + roles into { "account.role" => {name, role} }
 locals {
-  account_roles = {
-    for ar in flatten([
-      for sa in var.service_accounts : [
-        for role in sa.roles : {
-          key  = "${sa.name}-${var.by_env}-${var.geography}-${var.region}-sa.${role}"
-          name = "${sa.name}-${var.by_env}-${var.geography}-${var.region}-sa"
-          role = role
-        }
-      ]
-    ]) : ar.key => {
-      name = ar.name
-      role = ar.role
-    }
+  sa-name-suffix = "${var.by_env}-${var.geography}-${var.region}-sa"
+}
+
+resource "confluent_service_account" "create_env_automation_sa" {
+  display_name = "env-automation-${local.sa-name-suffix}"
+  description  = "Service account for env-automation-${local.sa-name-suffix} in ${confluent_environment.environment.display_name}"
+
+  lifecycle {
+    prevent_destroy = true
   }
+
 }
 
-# Create role bindings
-resource "confluent_role_binding" "bindings" {
-  for_each = local.account_roles
+resource "confluent_service_account" "create_metrics_reader_sa" {
+  display_name = "metrics-reader-${local.sa-name-suffix}"
+  description  = "Service account for env-automation-${local.sa-name-suffix} in ${confluent_environment.environment.display_name}"
 
-  # Look up service account by its *base name* (from var.service_accounts)
-  principal = "User:${confluent_service_account.accounts[replace(each.value.name, "-${var.by_env}-${var.geography}-${var.region}-sa", "")].id}"
+  lifecycle {
+    prevent_destroy = true
+  }
 
-  crn_pattern = (
-    contains(["AccountAdmin", "ResourceKeyAdmin"], each.value.role)
-      ? "crn://confluent.cloud/organization=${var.confluent_organization_id}"
-      : confluent_environment.this.resource_name
-  )
-
-  role_name = each.value.role
 }
+
+

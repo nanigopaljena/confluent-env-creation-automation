@@ -22,6 +22,12 @@ variable "confluent_cluster_api_secret" {
   sensitive   = true
 }
 
+variable "confluent_cluster_rest_endpoint" {
+  description = "Cluster rest endpoint"
+  type        = string
+  sensitive   = true
+}
+
 variable "confluent_organization_id" {
   description = "Confluent Cloud Organization ID"
   type        = string
@@ -50,16 +56,6 @@ variable "by_env" {
 variable "region" {
   description = "Region (e.g. eastus2)"
   type        = string
-}
-
-variable "sa_for_gravitee" {
-  type    = bool
-  default = false
-}
-
-variable "sa_for_liam" {
-  type    = bool
-  default = false
 }
 
 variable "default_topic_for_liam" {

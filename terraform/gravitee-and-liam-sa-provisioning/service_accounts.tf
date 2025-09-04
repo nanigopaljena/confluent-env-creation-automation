@@ -1,5 +1,5 @@
 resource "confluent_service_account" "create_liam_sa" {
-  display_name = "ef-liam-${var.confluent_environment_name}-sa"
+  display_name = "efs-liam-${var.confluent_environment_name}-sa"
   description  = "Service account for LIAM in ${var.confluent_environment_name}"
 
   lifecycle {
@@ -9,7 +9,7 @@ resource "confluent_service_account" "create_liam_sa" {
 }
 
 resource "confluent_service_account" "create_gravitee_sa" {
-  display_name = "ef-gravitee-${var.confluent_environment_name}-sa"
+  display_name = "efs-gravitee-${var.confluent_environment_name}-sa"
   description  = "Service account for Gravitee in ${var.confluent_environment_name}"
 
   lifecycle {

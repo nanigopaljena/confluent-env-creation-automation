@@ -1,4 +1,4 @@
-name: Terraform Confluent
+name: Provision SA for Gravitee and LIAM and Create Default LIAM Topic
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
         required: true
         default: "dev"
       ckEnvironmentId:
-        description: "Environment Id for which service account is required (e.g., env-abcd12)"
+        description: "Environment Id for which service account is required (e.g., env-abc1de)"
         required: true
         default: "env-xyn1gz"
       ckEnvironmentName:
@@ -16,25 +16,13 @@ on:
         required: true
         default: "dev-us-centralus"
       ckClusterId:
-        description: "Cluster Id for which service account is required (e.g., lkc-abcd12)"
+        description: "Cluster Id for which service account is required (e.g., lkc-a1bcd3)"
         required: true
-        default: "lkc-x3ozxk"
-      saForGravitee:
-        description: "Provision service account for Gravitee?"
-        type: boolean
-        default: true
-      saForLiam:
-        description: "Provision service account for LIAM?"
-        type: boolean
-        default: true
+        default: "lkc-a1bcd3"
       liamProjectName:
         description: "LIAM project name (e.g., liam-dev)"
         required: true
         default: "liam-dev"
-      defaultTopicForLiam:
-        description: "Provision default topic for LIAM?"
-        type: boolean
-        default: true
 
 jobs:
   terraform:
@@ -52,10 +40,7 @@ jobs:
       TF_VAR_confluent_environment_name: ${{ github.event.inputs.ckEnvironmentName }}
       TF_VAR_confluent_kafka_cluster_id: ${{ github.event.inputs.ckClusterId }}
       TF_VAR_by_env: ${{ github.event.inputs.environment }}
-      TF_VAR_sa_for_gravitee: ${{ github.event.inputs.saForGravitee }}
-      TF_VAR_sa_for_liam: ${{ github.event.inputs.saForLiam }}
       TF_VAR_liam_project_name: ${{ github.event.inputs.liamProjectName }}
-      TF_VAR_default_topic_for_liam: ${{ github.event.inputs.defaultTopicForLiam }}
 
     steps:
       - name: Extract region from environmentName

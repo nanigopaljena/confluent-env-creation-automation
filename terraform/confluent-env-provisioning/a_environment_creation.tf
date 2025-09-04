@@ -18,6 +18,10 @@ provider "confluent" {
 
 
 # Create Environment
-resource "confluent_environment" "this" {
+resource "confluent_environment" "environment" {
   display_name = "${var.by_env}-${var.geography}-${var.region}"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }

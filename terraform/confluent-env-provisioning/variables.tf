@@ -13,16 +13,16 @@ variable "region" {
   type        = string
 }
 
-variable "service_accounts" {
-  description = "List of service accounts and their roles"
-  type = list(object({
-    name  = string
-    roles = list(string)
-  }))
-  default = [
-    { name = "env-automation", roles = ["Operator", "DataDiscovery", "DataSteward", "AccountAdmin", "EnvironmentAdmin", "ResourceKeyAdmin", "MetricsViewer"] },
-    { name = "metrics-reader", roles = ["MetricsViewer", "Operator"] }
-  ]
+variable "env_automation_roles" {
+  description = "List of roles for env-automation service account"
+  type        = list(string)
+  default = ["Operator", "DataDiscovery", "DataSteward", "AccountAdmin", "EnvironmentAdmin", "ResourceKeyAdmin", "MetricsViewer"]
+}
+
+variable "metrics_reader_roles" {
+  description = "List of roles for metrics-reader service account"
+  type        = list(string)
+  default = ["MetricsViewer", "Operator"]
 }
 
 variable "confluent_cloud_api_key" {
