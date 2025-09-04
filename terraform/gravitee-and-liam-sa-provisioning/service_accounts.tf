@@ -1,19 +1,20 @@
-# resource "confluent_service_account" "gravitee" {
-#   count        = var.sa_for_gravitee ? 1 : 0
-#   display_name = "ef-gravitee-${var.confluent_environment_name}-sa"
-#   description  = "Service account for Gravitee in ${var.confluent_environment_name}"
-#
-#   depends_on = [
-#     confluent_kafka_topic.liam_default_topic
-#   ]
-# }
-#
-# resource "confluent_service_account" "liam" {
-#   count        = var.sa_for_liam ? 1 : 0
-#   display_name = "ef-liam-${var.confluent_environment_name}-sa"
-#   description  = "Service account for LIAM in ${var.confluent_environment_name}"
-#
-#   depends_on = [
-#     confluent_kafka_topic.liam_default_topic
-#   ]
-# }
+resource "confluent_service_account" "create_liam_sa" {
+  display_name = "ef-liam-${var.confluent_environment_name}-sa"
+  description  = "Service account for LIAM in ${var.confluent_environment_name}"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+
+}
+
+resource "confluent_service_account" "create_gravitee_sa" {
+  display_name = "ef-gravitee-${var.confluent_environment_name}-sa"
+  description  = "Service account for Gravitee in ${var.confluent_environment_name}"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+
